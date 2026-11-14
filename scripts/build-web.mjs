@@ -12,10 +12,8 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DOCS = join(ROOT, 'docs');
 
-// keep committed fonts, rebuild everything else
-for (const f of readdirSync(DOCS)) {
-  if (f !== 'fonts') rmSync(join(DOCS, f), { recursive: true, force: true });
-}
+rmSync(DOCS, { recursive: true, force: true });
+mkdirSync(DOCS, { recursive: true });
 
 await build({
   entryPoints: [join(ROOT, 'src/web/app.ts')],
@@ -29,6 +27,12 @@ await build({
 
 copyFileSync(join(ROOT, 'src/web/index.html'), join(DOCS, 'index.html'));
 copyFileSync(join(ROOT, 'src/web/style.css'), join(DOCS, 'style.css'));
+
+// self-hosted fonts are source assets, copied on every build
+mkdirSync(join(DOCS, 'fonts'), { recursive: true });
+for (const f of readdirSync(join(ROOT, 'src/web/fonts'))) {
+  copyFileSync(join(ROOT, 'src/web/fonts', f), join(DOCS, 'fonts', f));
+}
 
 for (const f of ['app.js', 'index.html', 'style.css',
   'fonts/clash-display-500.woff2', 'fonts/clash-display-600.woff2',
