@@ -1,0 +1,59 @@
+name: ci
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020   # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: sh tests/check-docs.sh
+  browser-smoke:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020   # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci && npm run build
+      - name: rebuild the demo strictly from source
+        # deleting docs/ first proves the workflow never leans on the
+        # committed artifact: the build must regenerate it wholesale
+        run: |
+          rm -rf docs/
+          node scripts/build-web.mjs
+      - run: node tests/browser-smoke.mjs
+      - name: committed demo matches a fresh build
+        run: git diff --exit-code --stat docs/
+  supply-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0  # gitleaks scans the push range, which a shallow clone does not have
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020   # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm audit --audit-level=high
+      - name: gitleaks (full history, pinned binary)
+        # The hosted action scans the push event range (base^..head), which
+        # fails when the range touches the root commit; scan full history
+        # with a sha256-verified binary instead.
+        run: |
+          curl -sSfL -o /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz
+          echo "9991e0b2903da4c8f6122b5c3186448b927a5da4deef1fe45271c3793f4ee29c  /tmp/gitleaks.tar.gz" | sha256sum -c -
+          tar xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          /tmp/gitleaks git --redact --exit-code 2 --log-level warn --config .gitleaks.toml .
+      - name: semgrep (local rules, no account)
+        run: pipx run semgrep --config .github/semgrep-rules.yml --error src/ scripts/

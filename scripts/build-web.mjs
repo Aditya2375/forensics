@@ -1,11 +1,8 @@
 /**
  * Build the self-hosted demo into docs/ (GitHub Pages serves /docs from main,
- * so the built bundle is committed):
- * 1. esbuild src/web/app.ts -> docs/app.js (IIFE, minified; stats.ts and the
- *    lazy probe adapter are bundled from source).
- * 2. Copy index.html, style.css, the single-threaded ONNX wasm runtime and
- *    the measured data artifacts.
- * 3. Fail if any runtime path index.html references is missing.
+ * so the built bundle is committed): esbuild src/web/app.ts -> docs/app.js
+ * (IIFE, minified; the core library is bundled from source), copy index.html,
+ * style.css and the self-hosted fonts. Fails if a runtime path is missing.
  */
 import { build } from 'esbuild';
 import { copyFileSync, mkdirSync, rmSync, existsSync, readdirSync } from 'node:fs';
@@ -15,8 +12,10 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DOCS = join(ROOT, 'docs');
 
-rmSync(DOCS, { recursive: true, force: true });
-mkdirSync(DOCS, { recursive: true });
+// keep committed fonts, rebuild everything else
+for (const f of readdirSync(DOCS)) {
+  if (f !== 'fonts') rmSync(join(DOCS, f), { recursive: true, force: true });
+}
 
 await build({
   entryPoints: [join(ROOT, 'src/web/app.ts')],
@@ -31,28 +30,7 @@ await build({
 copyFileSync(join(ROOT, 'src/web/index.html'), join(DOCS, 'index.html'));
 copyFileSync(join(ROOT, 'src/web/style.css'), join(DOCS, 'style.css'));
 
-// ONNX runtime wasm files (single-threaded; Pages cannot send COOP/COEP).
-mkdirSync(join(DOCS, 'ort'), { recursive: true });
-for (const f of readdirSync(join(ROOT, 'ort'))) {
-  copyFileSync(join(ROOT, 'ort', f), join(DOCS, 'ort', f));
-}
-
-// Measured artifacts: golden set + precomputed statistics snapshot.
-mkdirSync(join(DOCS, 'data'), { recursive: true });
-for (const f of ['golden.json', 'snapshot.json']) {
-  copyFileSync(join(ROOT, 'data', f), join(DOCS, 'data', f));
-}
-
-// Sanity: every runtime path the page needs must exist.
-for (const f of [
-  'app.js',
-  'index.html',
-  'style.css',
-  'ort/ort-wasm-simd-threaded.wasm',
-  'ort/ort-wasm-simd-threaded.mjs',
-  'data/golden.json',
-  'data/snapshot.json',
-]) {
+for (const f of ['app.js', 'index.html', 'style.css', 'fonts/space-grotesk.woff2', 'fonts/instrument-sans.woff2', 'fonts/jetbrains-mono.woff2']) {
   if (!existsSync(join(DOCS, f))) throw new Error(`docs build missing ${f}`);
 }
 console.log('docs build complete');

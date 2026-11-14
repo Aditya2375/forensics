@@ -8,5 +8,4 @@ dist/
 *.jks
 local.properties
 *service-account*.json
-.model-cache/
-docs/hf-mirror
+smoke-*.png

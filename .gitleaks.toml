@@ -1,0 +1,10 @@
+title = "forensics gitleaks config"
+
+# The bundled demo (docs/app.js, esbuild-minified) contains long
+# high-entropy identifiers that trip the generic-api-key rule. It is a
+# build artifact, not a credential.
+[allowlist]
+description = "bundled demo artifact"
+paths = [
+  '''docs/app\.js''',
+]

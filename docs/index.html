@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="description" content="Failure forensics for AI pipelines: replay a recorded incident trace, then watch delta debugging shrink the failing context to its minimal repro - live in your browser.">
+<title>forensics - failure forensics for AI pipelines</title>
+<link rel="preload" href="./fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 19 11 3l8 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="11" cy="14.5" r="2.2" fill="#ff5a1f" stroke="none"/></svg>
+    <span class="wordmark">forensics</span>
+    <span class="tagline">failure forensics for AI pipelines</span>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" data-tab="incident" role="tab" aria-selected="true">Incident</button>
+    <button class="tab" data-tab="replay" role="tab" aria-selected="false">Replay</button>
+    <button class="tab" data-tab="minimize" role="tab" aria-selected="false">Minimize</button>
+    <button class="tab" data-tab="report" role="tab" aria-selected="false">Report</button>
+  </nav>
+</header>
+
+<section class="picker" id="picker" aria-label="Choose an incident"></section>
+
+<main>
+  <section id="tab-incident" class="panel" role="tabpanel"></section>
+  <section id="tab-replay" class="panel" role="tabpanel" hidden></section>
+  <section id="tab-minimize" class="panel" role="tabpanel" hidden></section>
+  <section id="tab-report" class="panel" role="tabpanel" hidden></section>
+</main>
+
+<footer class="foot">
+  <span>Recorded traces. Real algorithms. The delta debugger, validators and replay run in your browser; the model's answers are replayed from the recording, and the demo judge on edited inputs is a labeled heuristic, not a model.</span>
+</footer>
+<script src="./app.js"></script>
+</body>
+</html>
