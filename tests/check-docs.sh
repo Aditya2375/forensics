@@ -51,4 +51,11 @@ s2311f=$(node -e "console.log(($s2311).toLocaleString('en-US'))")
 claim "INC-2311 exhaustive subsets" "${s2311f} (exhaustive subsets|runs)"
 claim "INC-2319 question length" "${q2319} (characters|char)"
 claim "INC-2319 reduction" "shrink(ing)? ${q2319} characters|${q2319} characters down"
+
+# No AI-tooling wording anywhere public (standing rule).
+if grep -rwli --exclude=check-docs.sh "claude\|anthropic\|chatgpt\|copilot\|impeccable\|cursor.com\|vibe.cod\|windsurf" \
+  README.md SECURITY_REVIEW.md src/ scripts/ tests/ .github/ package.json docs/index.html docs/style.css 2>/dev/null; then
+  echo "check-docs: tooling mention found"; exit 1
+fi
+echo "ok - no tooling mentions"
 echo "check-docs: all README claims match the code"

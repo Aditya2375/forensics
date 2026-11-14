@@ -30,7 +30,10 @@ await build({
 copyFileSync(join(ROOT, 'src/web/index.html'), join(DOCS, 'index.html'));
 copyFileSync(join(ROOT, 'src/web/style.css'), join(DOCS, 'style.css'));
 
-for (const f of ['app.js', 'index.html', 'style.css', 'fonts/space-grotesk.woff2', 'fonts/instrument-sans.woff2', 'fonts/jetbrains-mono.woff2']) {
+for (const f of ['app.js', 'index.html', 'style.css',
+  'fonts/clash-display-500.woff2', 'fonts/clash-display-600.woff2',
+  'fonts/satoshi-400.woff2', 'fonts/satoshi-500.woff2', 'fonts/satoshi-700.woff2',
+  'fonts/jetbrains-mono.woff2']) {
   if (!existsSync(join(DOCS, f))) throw new Error(`docs build missing ${f}`);
 }
 console.log('docs build complete');
