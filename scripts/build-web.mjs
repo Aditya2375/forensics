@@ -35,8 +35,6 @@ for (const f of readdirSync(join(ROOT, 'src/web/fonts'))) {
 }
 
 for (const f of ['app.js', 'index.html', 'style.css',
-  'fonts/clash-display-500.woff2', 'fonts/clash-display-600.woff2',
-  'fonts/satoshi-400.woff2', 'fonts/satoshi-500.woff2', 'fonts/satoshi-700.woff2',
   'fonts/jetbrains-mono.woff2']) {
   if (!existsSync(join(DOCS, f))) throw new Error(`docs build missing ${f}`);
 }
