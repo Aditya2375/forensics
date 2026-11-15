@@ -50,3 +50,7 @@ The Report tab assembles the incident postmortem — root cause, minimal reprodu
 ## Security and privacy
 
 No backend, no keys, no network calls: the page's Content-Security-Policy allows `connect-src 'self'` and every asset (fonts included) is self-hosted. The demo DOM is built exclusively with `textContent`/`createElement` — no HTML sinks. Incident data is synthetic. See `SECURITY_REVIEW.md` for the full checklist.
+
+## License
+
+Licensed under either of [MIT](LICENSE-MIT) or [Apache License 2.0](LICENSE-APACHE) at your option.
